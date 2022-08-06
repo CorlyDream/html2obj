@@ -1,0 +1,25 @@
+{
+  "name": "html2obj",
+  "version": "1.0.0",
+  "description": "pure js,html to obj,obj to html",
+  "main": "./src/html2obj.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/CorlyDream/html2obj.git"
+  },
+  "keywords": [
+    "html",
+    "parse",
+    "html2json",
+    "json2html"
+  ],
+  "author": "meng",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CorlyDream/html2obj/issues"
+  },
+  "homepage": "https://github.com/CorlyDream/html2obj#readme"
+}
