@@ -234,9 +234,9 @@ console.log(dom.extractById('pre-id').toHtml())
 
 ```json
 {
-  tagName:"div", 
-  attrs:{},	
-  chid:[]
+  "tagName": "div", 
+  "attrs": {},	
+  "chid": []
 }
 ```
 
