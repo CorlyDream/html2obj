@@ -234,11 +234,17 @@ console.log(dom.extractById('pre-id').toHtml())
 
 ```json
 {
-  tagName:"div", // 标签名
-  attrs:{},	// 属性对象，key 为属性id，value 属性值
-  chid:[]	// 子节点数组
+  tagName:"div", 
+  attrs:{},	
+  chid:[]
 }
 ```
+
+- tagName：标签名
+- attrs：属性对象
+- chid：子节点数组
+
+
 
 > 文本节点 tagName 为 `#text`
 
