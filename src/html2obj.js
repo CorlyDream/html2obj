@@ -10,6 +10,7 @@ const defaultOptions = {
   unpairedTags: util.unpairedTags,
   processEntities: true,
   trimValues: true,
+  htmlEntities: true,
   processComment: false,
   commentPropName: "#comment",
   attributeNamePrefix: '',
@@ -43,11 +44,11 @@ class Html2Obj {
     };
     this.htmlEntities = {
       "space": { regex: /&(nbsp|#160);/g, val: " " },
-      // "lt" : { regex: /&(lt|#60);/g, val: "<" },
-      // "gt" : { regex: /&(gt|#62);/g, val: ">" },
-      // "amp" : { regex: /&(amp|#38);/g, val: "&" },
-      // "quot" : { regex: /&(quot|#34);/g, val: "\"" },
-      // "apos" : { regex: /&(apos|#39);/g, val: "'" },
+      "lt" : { regex: /&(lt|#60);/g, val: "<" },
+      "gt" : { regex: /&(gt|#62);/g, val: ">" },
+      "amp" : { regex: /&(amp|#38);/g, val: "&" },
+      "quot" : { regex: /&(quot|#34);/g, val: "\"" },
+      "apos" : { regex: /&(apos|#39);/g, val: "'" },
       "cent": { regex: /&(cent|#162);/g, val: "¢" },
       "pound": { regex: /&(pound|#163);/g, val: "£" },
       "yen": { regex: /&(yen|#165);/g, val: "¥" },
@@ -84,8 +85,6 @@ function addExternalEntities(externalEntities) {
  * @param {string} tagName
  * @param {string} jPath
  * @param {boolean} dontTrim
- * @param {boolean} hasAttributes
- * @param {boolean} isLeafNode
  * @param {boolean} escapeEntities
  */
 function parseTextData(val, tagName, jPath, dontTrim, escapeEntities) {
@@ -258,9 +257,7 @@ const parseHtml = function (htmlData) {
           //boolean tag
           else if (this.options.unpairedTags.indexOf(tagName) !== -1) {
             i = result.closeIndex;
-          }
-          //normal tag
-          else {
+          } else {  //normal tag
             //read until closing tag is found
             const result = this.readStopNodeData(htmlData, tagName, closeIndex + 1);
             if (!result) {
