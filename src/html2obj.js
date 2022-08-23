@@ -6,10 +6,11 @@ const readDocType = require("./DocTypeReader");
 
 
 const defaultOptions = {
-  stopNodes: ["*.pre", "*.script", "*.video", "*.style"],
+  stopNodes: [ "*.script", "*.video", "*.style"],
   unpairedTags: util.unpairedTags,
   processEntities: true,
   trimValues: true,
+  allowBooleanAttributes: true,
   htmlEntities: true,
   processComment: false,
   commentPropName: "#comment",
@@ -183,11 +184,14 @@ const parseHtml = function (htmlData) {
 
         if (currentNode) {
           textData = this.saveTextToParentTag(textData, currentNode, jPath);
+          if(tagName != currentNode.tagName){
+            console.error("html2obj tagName not pair", i, currentNode.tagName)
+          }
         }
 
+        currentNode = this.tagsNodeStack.pop();
         jPath = jPath.substring(0, jPath.lastIndexOf("."));
 
-        currentNode = this.tagsNodeStack.pop();//avoid recurssion, set the parent tag scope
         textData = "";
         i = closeIndex;
       } else if (htmlData[i + 1] === '?') {
@@ -240,12 +244,6 @@ const parseHtml = function (htmlData) {
           textData = this.saveTextToParentTag(textData, currentNode, jPath);
         }
 
-        //check if last tag was unpaired tag
-        const lastTag = currentNode;
-        if (lastTag && this.options.unpairedTags.indexOf(lastTag.tagName) !== -1) {
-          currentNode = this.tagsNodeStack.pop();
-          jPath = jPath.substring(0, jPath.lastIndexOf('.'))
-        }
         jPath += jPath ? "." + tagName : tagName;
 
         if (this.isItStopNode(this.options.stopNodes, jPath, tagName)) {
@@ -309,7 +307,6 @@ const parseHtml = function (htmlData) {
             }
           } else { //opening tag
             const childNode = new HtmlNode(tagName);
-            this.tagsNodeStack.push(currentNode);
 
             if (tagName !== tagExp && attrExpPresent) {
               childNode.addAttrs(this.buildAttributesMap(tagExp, jPath));
@@ -318,10 +315,18 @@ const parseHtml = function (htmlData) {
             if(this.options.nodePostProcessor){
               this.options.nodePostProcessor(childNode)
             }
+            this.tagsNodeStack.push(currentNode);
             currentNode = childNode;
           }
           textData = "";
           i = closeIndex;
+
+        }
+        //check if last tag was unpaired tag
+        const lastTag = currentNode;
+        if (lastTag && this.options.unpairedTags.indexOf(lastTag.tagName) !== -1) {
+          currentNode = this.tagsNodeStack.pop();
+          jPath = jPath.substring(0, jPath.lastIndexOf('.'))
         }
       }
     } else {

@@ -1,10 +1,10 @@
 {
   "name": "html2obj",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "pure js,html to obj,obj to html",
   "main": "./src/html2obj.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -21,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/CorlyDream/html2obj/issues"
   },
-  "homepage": "https://github.com/CorlyDream/html2obj#readme"
+  "homepage": "https://github.com/CorlyDream/html2obj#readme",
+  "devDependencies": {
+    "jest": "^28.1.3"
+  }
 }

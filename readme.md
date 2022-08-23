@@ -51,7 +51,7 @@ npm install -S html2obj
 </html>
 ```
 
-js 代码可参考 `test/parse.test.js`
+js 代码可参考 `example/parse.example.js`
 
 ```js
 var dom = new Html2Obj().parseHtml(html)[0]
