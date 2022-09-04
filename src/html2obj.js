@@ -323,8 +323,7 @@ const parseHtml = function (htmlData) {
 
         }
         //check if last tag was unpaired tag
-        const lastTag = currentNode;
-        if (lastTag && this.options.unpairedTags.indexOf(lastTag.tagName) !== -1) {
+        if (currentNode && this.options.unpairedTags.indexOf(currentNode.tagName) !== -1) {
           currentNode = this.tagsNodeStack.pop();
           jPath = jPath.substring(0, jPath.lastIndexOf('.'))
         }
