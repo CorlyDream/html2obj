@@ -164,7 +164,11 @@ function buildAttributesMap(attrStr, jPath) {
     return attrs;
   }
 }
-
+/**
+ * 
+ * @param {String} htmlData 
+ * @returns {HtmlNode[]}
+ */
 const parseHtml = function (htmlData) {
   htmlData = htmlData.replace(/\r\n?/g, "\n");
   const rootNode = new HtmlNode('!root');
