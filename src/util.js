@@ -1,6 +1,6 @@
 'use strict';
 
-const unpairedTags = ["area", "base", "br", "col", "circle", "ellipse", "embed", "frame", "hr", "img", "input", "line", "link", "meta", "param", "polygon", "rect", "source", "track", "use", "wbr"]
+const unpairedTags = ["area", "base", "br", "col", "circle", "ellipse", "embed", "frame", "hr", "img", "input", "line", "link", "meta", "param", "polygon", "source", "track", "use", "wbr"]
 
 const getAllMatches = function(string, regex) {
   const matches = [];
