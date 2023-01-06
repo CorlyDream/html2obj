@@ -12,8 +12,8 @@ class HtmlNode {
     node.addChild(val)
     this.child.push(node);
   }
-  addChild(node) {
-    this.child.push(node);
+  addChild(...nodes) {
+    this.child.push(...nodes);
   }
   addAttrs(attrs) {
     if (!attrs) {
@@ -110,7 +110,7 @@ class HtmlNode {
       item.extractByClass(className, resultArray)
     }
   }
-};
+}
 
 
 module.exports = HtmlNode;

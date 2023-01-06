@@ -104,7 +104,7 @@ function readDocType(xmlData, i){
     return {entities, i};
 }
 
-const entityRegex = RegExp("^\\s([a-zA-z0-0]+)[ \t](['\"])([^&]+)\\2");
+const entityRegex = RegExp("^\\s([a-zA-z0-9]+)[ \\t](['\"])([^&]+)\\2");
 function parseEntityExp(exp, entities){
     const match = entityRegex.exec(exp);
     if(match){

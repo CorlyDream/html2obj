@@ -34,7 +34,6 @@ const buildOptions = function (options) {
 class Html2Obj {
   constructor(options) {
     this.options = buildOptions(options);
-    this.currentNode = null;
     this.tagsNodeStack = [];
     this.docTypeEntities = {};
     this.lastEntities = {
@@ -68,13 +67,14 @@ class Html2Obj {
   parseHtml(htmlData) {
     htmlData = htmlData.replace(/\r\n?/g, "\n");
     const rootNode = new HtmlNode('!root');
+    // 当前遍历的节点
     let currentNode = rootNode;
     let textData = "";
     let jPath = "";
     for (let i = 0; i < htmlData.length; i++) {//for each char in html data
       const ch = htmlData[i];
       if (ch === '<') {
-        if (htmlData[i + 1] === '/') {//Closing Tag
+        if (htmlData[i + 1] === '/') {// close tag，
           const closeIndex = findClosingIndex(htmlData, ">", i, "Closing Tag is not closed.")
           let tagName = htmlData.substring(i + 2, closeIndex).trim();
 
@@ -82,11 +82,17 @@ class Html2Obj {
             tagName = this.options.transformTagName(tagName);
           }
 
-          if (currentNode) {
-            textData = this.saveTextToParentTag(textData, currentNode, jPath);
-            if (tagName != currentNode.tagName) {
-              console.error("html2obj tagName not pair", i, currentNode.tagName)
-            }
+          textData = this.saveTextToCurrentNode(textData, currentNode, jPath);
+          // 处理非闭合标签
+          while (tagName != currentNode.tagName) {
+            // 将当前节点的子节点给到父节点，然后清空当前节点子节点
+            // console.error("html2obj tagName not pair", i, currentNode.tagName)
+            const childTemp = currentNode.child
+            currentNode.child = []
+            const parentNode = this.tagsNodeStack.pop();
+            jPath = jPath.substring(0, jPath.lastIndexOf("."));
+            parentNode.addChild(...childTemp)
+            currentNode = parentNode
           }
 
           currentNode = this.tagsNodeStack.pop();
@@ -96,24 +102,24 @@ class Html2Obj {
           i = closeIndex;
         } else if (htmlData[i + 1] === '?') {
           throw new Error("不支持标签 ? " + i)
-        } else if (htmlData.substr(i + 1, 3) === '!--') {
+        } else if (htmlData.substring(i + 1, i+4) === '!--') {
           const endIndex = findClosingIndex(htmlData, "-->", i + 4, "Comment is not closed.")
           if (this.options.processComment) {
             const comment = htmlData.substring(i + 4, endIndex - 2);
 
-            textData = this.saveTextToParentTag(textData, currentNode, jPath);
+            textData = this.saveTextToCurrentNode(textData, currentNode, jPath);
             currentNode.add(this.options.commentPropName, comment);
           }
           i = endIndex;
-        } else if (htmlData.substr(i + 1, 2) === '!D') {
+        } else if (htmlData.substring(i + 1, i+3) === '!D') {
           const result = readDocType(htmlData, i);
           this.docTypeEntities = result.entities;
           i = result.i;
-        } else if (htmlData.substr(i + 1, 2) === '![') {
+        } else if (htmlData.substring(i + 1, i+3) === '![') {
           const closeIndex = findClosingIndex(htmlData, "]]>", i, "CDATA is not closed.") - 2;
           const tagExp = htmlData.substring(i + 9, closeIndex);
 
-          textData = this.saveTextToParentTag(textData, currentNode, jPath);
+          textData = this.saveTextToCurrentNode(textData, currentNode, jPath);
 
           //cdata should be set even if it is 0 length string
           if (this.options.cdataPropName) {
@@ -139,9 +145,9 @@ class Html2Obj {
           }
 
           //save text as child node
-          if (currentNode && textData) {
+          if (textData) {
             //when nested tag is found
-            textData = this.saveTextToParentTag(textData, currentNode, jPath);
+            textData = this.saveTextToCurrentNode(textData, currentNode, jPath);
           }
 
           jPath += jPath ? "." + tagName : tagName;
@@ -223,14 +229,17 @@ class Html2Obj {
 
           }
           //check if last tag was unpaired tag
-          if (currentNode && this.options.unpairedTags.indexOf(currentNode.tagName) !== -1) {
-            currentNode = this.tagsNodeStack.pop();
-            jPath = jPath.substring(0, jPath.lastIndexOf('.'))
-          }
+          // if (currentNode && this.options.unpairedTags.indexOf(currentNode.tagName) !== -1) {
+          //   currentNode = this.tagsNodeStack.pop();
+          //   jPath = jPath.substring(0, jPath.lastIndexOf('.'))
+          // }
         }
       } else {
         textData += htmlData[i];
       }
+    }
+    if(this.tagsNodeStack.length>1){
+      console.error("parseHtml 处理结束栈非空", this.tagsNodeStack)
     }
     return rootNode.child;
   }
@@ -337,6 +346,7 @@ class Html2Obj {
     }
     return false;
   }
+  // html 字符转义
   replaceEntitiesValue(val) {
     if (this.options.processEntities) {
       for (let entityName in this.docTypeEntities) {
@@ -386,7 +396,7 @@ class Html2Obj {
       }
     }//end for loop
   }
-  saveTextToParentTag(textData, currentNode, jPath) {
+  saveTextToCurrentNode(textData, currentNode, jPath) {
     if (textData) { //store previously collected data as textNode
 
       textData = this.parseTextData(textData,
@@ -394,8 +404,9 @@ class Html2Obj {
         jPath,
         false);
 
-      if (textData !== undefined && textData !== "")
+      if (textData !== undefined && textData !== ""){
         currentNode.add(this.options.textNodeName, textData);
+      }
       textData = "";
     }
     return textData;
