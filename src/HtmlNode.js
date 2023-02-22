@@ -94,7 +94,7 @@ class HtmlNode {
     }
   }
   /**
-   * 
+   * 匹配包含此 className 的节点
    * @param {String} className 
    * @param {HtmlNode[]} resultArray 
    */
@@ -108,6 +108,24 @@ class HtmlNode {
         continue
       }
       item.extractByClass(className, resultArray)
+    }
+  }
+  /**
+   * 匹配包含此 property 的节点
+   * @param {String} propertyName 
+   * @param {String} propertyValue 
+   * @param {HtmlNode[]} resultArray 
+   */
+  extractByProperty(propertyName, propertyValue, resultArray){
+    const pValue = this.attrs[propertyName]
+    if(pValue && pValue.includes(propertyValue)){
+      resultArray.push(this)
+    }
+    for(let item of this.child){
+      if (!(item instanceof HtmlNode)) {
+        continue
+      }
+      item.extractByProperty(propertyName, propertyValue, resultArray)
     }
   }
 }
