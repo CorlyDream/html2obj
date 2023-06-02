@@ -11,6 +11,7 @@ function baseTest(file, title, gongzhonghaoName, contentLength) {
     var dom = new Html2Obj().parseHtml(htmlData)[0]
 
     let titleNode = dom.extractById('activity-name')
+    
     let gongzhonghaoNameNode = dom.extractById('js_name')
     let jsContentNode = dom.extractById('js_content')
     expect(titleNode.toText()).toBe(title)
