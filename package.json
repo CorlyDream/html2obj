@@ -1,6 +1,6 @@
 {
   "name": "html2obj",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "pure js,html to obj,obj to html",
   "main": "./src/html2obj.js",
   "scripts": {

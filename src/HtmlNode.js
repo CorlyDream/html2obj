@@ -26,7 +26,7 @@ class HtmlNode {
      * @param {Array} remainAttrs 可以为空，表示保留所有，非空时，表示只保留这些属性
      * @returns 
      */
-    toHtml(remainAttrs) {
+    toHtml(includeAttrs, execludeAttrs) {
         if (this.tagName[0] == '#') {
             if (this.tagName != '#text') {
                 return ''
@@ -35,7 +35,10 @@ class HtmlNode {
         }
         let html = `<${this.tagName}`
         for (const key in this.attrs) {
-            if (remainAttrs && remainAttrs.length > 0 && remainAttrs.indexOf(key) == -1) {
+            if (includeAttrs && includeAttrs.length > 0 && includeAttrs.indexOf(key) == -1) {
+                continue
+            }
+            if (execludeAttrs && execludeAttrs.length > 0 && execludeAttrs.indexOf(key) > -1) {
                 continue
             }
             let val = this.attrs[key]
@@ -47,7 +50,7 @@ class HtmlNode {
         }
         html += '>'
         for (let item of this.child) {
-            html += item.toHtml(remainAttrs)
+            html += item.toHtml(includeAttrs, execludeAttrs)
         }
         html += `</${this.tagName}>`
         return html
